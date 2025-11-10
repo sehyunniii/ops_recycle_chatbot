@@ -1,0 +1,16 @@
+# Python/Backend
+venv/
+__pycache__/
+*.pyc
+*.env
+vector_db/
+my_faiss_index/
+
+# Node.js/Frontend
+node_modules/
+dist/
+*.env
+.DS_Store
+
+# macOS
+.DS_Store

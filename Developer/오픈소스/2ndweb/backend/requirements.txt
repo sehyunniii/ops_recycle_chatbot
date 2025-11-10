@@ -1,0 +1,25 @@
+# backend/requirements.txt
+fastapi
+uvicorn[standard]
+python-multipart
+httpx # (Vite 프록시가 아닌 외부 API 호출용으로 남겨둘 수 있음)
+
+# Pytorch (분류 모델용)
+torch
+torchvision
+Pillow
+
+# LangChain (RAG용)
+langchain
+langchain-openai
+langchain-community
+faiss-cpu # 또는 chromadb
+tiktoken
+python-dotenv
+langchain-text-splitters
+
+
+unstructured
+unstructured-markdown
+
+python-dotenv

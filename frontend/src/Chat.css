@@ -1,0 +1,452 @@
+/* src/Chat.css */
+.chat-container {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  flex: 1; 
+  height: 100vh; 
+  background: #ffffff; 
+  overflow: hidden;  
+  color: #213547;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 1.25rem 1.5rem; 
+  border-bottom: 1px solid #f0f0f0; 
+  background: #fafcfe; 
+}
+
+.chat-header h2 {
+  text-align: left; 
+  margin: 0;
+  padding: 0;
+  border-bottom: none; 
+  background: transparent;
+  font-size: 1.5rem; 
+  font-weight: 700; 
+  color: #333;
+}
+
+.new-chat-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem; 
+  color: #555;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: color 0.2s, background-color 0.2s, transform 0.1s ease-out; 
+}
+.new-chat-btn:hover {
+  color: #007aff;
+  background-color: #eef5ff; 
+}
+.new-chat-btn:active { 
+  transform: scale(0.9);
+}
+
+
+.message-list {
+  flex-grow: 1; 
+  overflow-y: auto; 
+  padding: 1.5rem; 
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background-color: #f8f9fa; 
+}
+
+/* ⭐️ (수정) 웰컴 스크린 스타일 */
+.welcome-screen {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  padding: 2rem;
+}
+
+.welcome-screen .welcome-icon {
+  font-size: 4rem; 
+  color: #ccc;
+  margin-bottom: 1rem;
+  animation: bounce-in 0.8s ease-out; 
+}
+
+.welcome-screen h3 {
+  color: #555;
+  margin-bottom: 0.5rem;
+  font-size: 1.6rem;
+}
+.welcome-screen p {
+  color: #777;
+  font-size: 1.1rem;
+  max-width: 400px;
+}
+
+/* ⭐️ (신규) 웰컴 스크린 예시 질문 버튼 */
+.example-prompts {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap; /* ⭐️ 모바일에서 줄바꿈 */
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.example-prompts button {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  color: #333;
+  padding: 0.6rem 1rem;
+  font-size: 0.9em;
+  font-weight: 500;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.example-prompts button:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+
+/* ⭐️ (신규) 웰컴 스크린 아이콘 애니메이션 */
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+.message {
+  padding: 0.8rem 1.2rem;
+  border-radius: 20px;
+  max-width: 75%;
+  word-wrap: break-word;
+  line-height: 1.45;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative; 
+}
+
+/* ⭐️ (신규) 메시지 등장 애니메이션 */
+.animate-message {
+  animation: slide-in-bottom 0.3s ease-out;
+}
+
+@keyframes slide-in-bottom {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
+.message.user {
+  background-color: #007aff;
+  color: white;
+  align-self: flex-end; 
+  border-bottom-right-radius: 8px;
+}
+
+.message.assistant {
+  background-color: #ffffff;
+  color: #222;
+  align-self: flex-start;
+  border-bottom-left-radius: 8px;
+}
+
+/* ⭐️ (신규) 마크다운 스타일 (말풍선 내부) */
+.message .react-markdown p {
+  margin: 0 0 0.5rem 0;
+}
+.message .react-markdown p:last-child {
+  margin-bottom: 0;
+}
+.message .react-markdown ul, 
+.message .react-markdown ol {
+  padding-left: 1.2rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.message .react-markdown li {
+  margin-bottom: 0.25rem;
+}
+
+
+/* ⭐️ (신규) 복사 버튼 스타일 */
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 4px;
+  font-size: 0.9rem;
+  color: #555;
+  cursor: pointer;
+  
+  opacity: 0; 
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s, transform 0.1s ease-out; 
+  
+  display: flex;
+  align-items: center;
+}
+.message.assistant:hover .copy-btn {
+  opacity: 1;
+  visibility: visible;
+}
+.copy-btn:hover {
+  background: #f0f0f0;
+}
+.copy-btn:active { 
+  transform: scale(0.9);
+}
+
+
+.message.assistant.image-preview-message {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid #007aff;
+  max-width: 90%;
+  border-radius: 12px;
+  border-bottom-left-radius: 8px;
+  position: relative; 
+}
+.image-preview-message .copy-btn {
+  top: 12px;
+  right: 12px;
+}
+
+
+.loading-dots-wrapper {
+  display: flex;
+  align-items: center;
+  height: 1.45em; 
+}
+.loading-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #999;
+  border-radius: 50%;
+  margin: 0 2px;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+.loading-dot:nth-child(1) { animation-delay: -0.32s; }
+.loading-dot:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1.0); }
+}
+
+.chat-input-form {
+  display: flex;
+  flex-direction: column; 
+  padding: 1rem;
+  border-top: 1px solid #e0e0e0; 
+  background: #ffffff; 
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03); 
+  z-index: 10;
+}
+
+.staged-image-preview {
+  position: relative;
+  display: inline-block; 
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  background: #f8f9fa; 
+  border: 1px dashed #d0d0d0; 
+  border-radius: 8px;
+  max-width: 100px; 
+  margin-left: 1rem; 
+}
+
+.staged-image-preview img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  display: block;
+}
+
+.cancel-image-btn {
+  position: absolute;
+  top: -8px; 
+  right: -8px;
+  width: 24px; 
+  height: 24px;
+  border-radius: 50%;
+  background: #333; 
+  color: white;
+  border: 2px solid white; 
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 20px; 
+  text-align: center;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.1s ease-out; 
+}
+.cancel-image-btn:hover {
+  background: #000;
+}
+.cancel-image-btn:active { 
+  transform: scale(0.9);
+}
+
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: #f0f0f0; 
+  border-radius: 25px; 
+  padding: 0.3rem 0.5rem;
+}
+
+.input-row input {
+  flex-grow: 1;
+  padding: 0.75rem 0.5rem; 
+  border: none; 
+  background: transparent; 
+  color: #213547;
+}
+.input-row input:focus {
+  outline: none; 
+}
+
+.input-row .image-upload-button {
+  background-color: transparent; 
+  color: #007aff; 
+  border-radius: 50%; 
+  font-size: 1.3em; 
+  transition: background-color 0.2s, transform 0.1s ease-out; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6em; 
+  line-height: 0;
+}
+.input-row .image-upload-button:hover {
+  background-color: #e0e0e0; 
+}
+.input-row .image-upload-button:active { 
+  transform: scale(0.9);
+}
+
+.input-row button {
+  padding: 0.6rem 1.1rem; 
+  background-color: #007aff; 
+  color: white;
+  font-weight: 600; 
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s ease-out; 
+}
+.input-row button:hover {
+  background-color: #0056b3;
+}
+.input-row button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+.input-row button:active:not(:disabled) { 
+  transform: scale(0.95);
+}
+
+
+@media (max-width: 768px) {
+  .chat-container {
+    height: 100vh; 
+    max-height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+  
+  .chat-header {
+    padding: 1rem; 
+  }
+  .chat-header h2 {
+    font-size: 1.2rem;
+  }
+  .new-chat-btn {
+    font-size: 1.3rem;
+  }
+
+  /* ⭐️ (신규) 모바일 웰컴 스크린 */
+  .welcome-screen h3 {
+    font-size: 1.3rem;
+  }
+  .welcome-screen p {
+    font-size: 0.95rem;
+  }
+  .example-prompts button {
+    font-size: 0.85em;
+    padding: 0.5rem 0.8rem;
+  }
+
+
+  .message-list {
+    padding: 0.5rem; 
+  }
+
+  .chat-input-form {
+    padding: 0.5rem; 
+  }
+
+  .staged-image-preview {
+    margin-left: 0.5rem;
+    max-width: 100px; 
+  }
+
+  .input-row {
+    gap: 0.25rem; 
+    padding: 0.2rem 0.3rem; 
+  }
+
+  .input-row .image-upload-button {
+    padding: 0.6em; 
+    font-size: 1.2em; 
+  }
+
+  .input-row button {
+    padding: 0.75rem 1rem;
+  }
+  
+  .message.assistant .copy-btn {
+     opacity: 0.7;
+     visibility: visible;
+     background: #f0f0f0;
+     border: 1px solid #ddd;
+  }
+}

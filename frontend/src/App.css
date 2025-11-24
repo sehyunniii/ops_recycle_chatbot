@@ -1,0 +1,104 @@
+/* src/App.css */
+
+.app-layout {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; 
+  background-color: transparent; 
+}
+
+/* ⭐️ (수정) 사이드바 스타일 */
+.sidebar {
+  flex: 0 0 340px; 
+  height: 100vh;
+  padding: 2rem; 
+  box-sizing: border-box;
+  background-color: #ffffff; 
+  border-right: 1px solid #e0e0e0; 
+  overflow-y: auto; 
+  color: #333;
+}
+
+.sidebar h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem; /* ⭐️ 간격 줄임 */
+  padding-bottom: 1rem; 
+  border-bottom: 1px solid #eee; 
+  font-size: 1.8rem; 
+  font-weight: 700;
+  color: #222; 
+}
+
+.sidebar .sidebar-intro {
+  font-size: 0.95em;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 2rem; 
+  background-color: #f8f9fa; /* ⭐️ 배경색 추가 */
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+/* ⭐️ (신규) 사이드바 섹션 공통 */
+.sidebar-section {
+  margin-bottom: 2rem;
+}
+
+.sidebar-section h3 {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #007aff; /* ⭐️ 파란색 포인트 */
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+/* ⭐️ (신규) 4대 원칙 리스트 */
+.principles-list {
+  padding-left: 0;
+  list-style: none;
+  margin: 0;
+}
+.principles-list li {
+  font-size: 0.95em;
+  color: #444;
+  margin-bottom: 0.75rem;
+}
+.principles-list li strong {
+  display: block;
+  font-size: 1.05em;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ⭐️ (신규) FAQ 리스트 */
+.faq-list {
+  padding-left: 0;
+  list-style: none;
+  margin: 0;
+}
+.faq-list li {
+  font-size: 0.9em;
+  color: #444;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  line-height: 1.5;
+}
+.faq-list li strong {
+  display: block;
+  color: #d9534f; /* ⭐️ 헷갈리는 품목 강조 (붉은 계열) */
+  margin-bottom: 0.25rem;
+}
+.faq-list li span {
+  color: #555;
+}
+
+
+/* ⭐️ (수정) 모바일 화면 대응 (기존과 동일) */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none; 
+  }
+}

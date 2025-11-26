@@ -1,16 +1,10 @@
-// src/Chat.jsx
 import { useState, useRef, useEffect } from "react";
-// ... (react-icons, react-markdown 등 import) ...
 import { FiPaperclip, FiPlusSquare, FiCopy } from "react-icons/fi";
-import { FaRecycle } from 'react-icons/fa'; 
+import { FaRecycle } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 
-
-// ⭐️ (제거) const YOUR_PC_IP_ADDRESS = ...
-// ⭐️ (제거) const API_BASE_URL = ...
-
+// 로컬 스토리지에서 채팅 기록 불러오기
 const loadChatHistory = () => {
-  // ... (localStorage 로직 동일) ...
   const savedHistory = localStorage.getItem("chat_history");
   if (savedHistory) {
     return JSON.parse(savedHistory);
@@ -18,16 +12,26 @@ const loadChatHistory = () => {
     return [{ role: "assistant", content: "안녕하세요! 무엇이든 물어보세요." }];
   }
 };
+
 const defaultMessage = [{ role: "assistant", content: "안녕하세요! 새 대화를 시작합니다." }];
 
 function Chat() {
-  // ... (모든 state 선언은 동일) ...
-  const [messages, setMessages] = useState(loadChatHistory()); 
+  // ---------------------------------------------------------
+  // ⭐️ [수정됨] 누락되었던 상태(State) 변수들을 모두 선언했습니다.
+  // ---------------------------------------------------------
+  const [messages, setMessages] = useState(loadChatHistory());
   const [input, setInput] = useState("");
-  // ... (이하 state) ...
+  
+  // 에러 원인이었던 변수들 추가
+  const [isLoadingChat, setIsLoadingChat] = useState(false);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const messageListRef = useRef(null);
+  // ---------------------------------------------------------
 
+  // 채팅 기록이 변경될 때마다 스크롤 이동 및 저장
   useEffect(() => {
-    // ... (localStorage 저장 로직 동일) ...
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
@@ -36,22 +40,23 @@ function Chat() {
     } else {
       localStorage.removeItem("chat_history");
     }
-  }, [messages]); 
+  }, [messages]);
 
-  // ... (handleFileChange 로직 동일) ...
+  // 파일 선택 핸들러
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
     }
-    e.target.value = null; 
+    e.target.value = null;
   };
-  
-  // ... (handleChatSubmitWithText 로직 수정) ...
+
+  // 텍스트 채팅 전송 (스트리밍)
   const handleChatSubmitWithText = async (userMessage, imageContext = null) => {
-    // ... (로직 동일) ...
-    setIsLoadingChat(true); 
+    setIsLoadingChat(true);
+
+    // 이미지 분석 결과가 있다면 컨텍스트로 사용
     const contextToUse = imageContext || messages
       .slice()
       .reverse()
@@ -62,49 +67,54 @@ function Chat() {
       message: userMessage,
       image_context: contextToUse,
     };
+
+    // 사용자 메시지 즉시 추가
     setMessages((prev) => [
-      ...prev, 
+      ...prev,
       { role: "user", content: userMessage },
-      { role: "assistant", content: "" } 
+      { role: "assistant", content: "" }
     ]);
-    
+
     try {
-      // ⭐️ (수정) IP 주소 제거 -> 상대 경로 (Vite 프록시가 처리)
+      // ⭐️ 상대 경로 사용 (Vite 프록시가 백엔드로 전달)
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(chatPayload),
       });
-      // ... (이하 스트리밍 로직 동일) ...
+
       if (!res.ok) {
         const errorText = await res.text();
         throw new Error(`Server error: ${res.status} - ${errorText}`);
       }
+
+      // 스트리밍 응답 처리
       const reader = res.body.getReader();
-      // ... (while(true) ... reader.read() ...) ...
       const decoder = new TextDecoder("utf-8");
-      let firstChunk = true; 
+      let firstChunk = true;
+
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break; 
+        if (done) break;
+        
         const chunk = decoder.decode(value);
         if (firstChunk) {
-          setIsLoadingChat(false); 
+          setIsLoadingChat(false);
           firstChunk = false;
         }
+
         setMessages((prevMessages) => {
           const lastMessage = prevMessages[prevMessages.length - 1];
           const updatedMessage = {
             ...lastMessage,
-            content: lastMessage.content + chunk, 
+            content: lastMessage.content + chunk,
           };
           return [...prevMessages.slice(0, -1), updatedMessage];
         });
       }
     } catch (error) {
-      // ... (오류 처리 동일) ...
       console.error("Chat Error:", error);
-      setIsLoadingChat(false); 
+      setIsLoadingChat(false);
       setMessages((prevMessages) => {
         const lastMessage = prevMessages[prevMessages.length - 1];
         const updatedMessage = {
@@ -114,50 +124,55 @@ function Chat() {
         return [...prevMessages.slice(0, -1), updatedMessage];
       });
     }
-    if (isLoadingChat) setIsLoadingChat(false); 
+
+    if (isLoadingChat) setIsLoadingChat(false);
   };
 
-  // ... (handleSubmitFromForm 로직 수정) ...
+  // 폼 전송 핸들러 (이미지 + 텍스트)
   const handleSubmitFromForm = async (e) => {
-    // ... (로직 동일) ...
-    e.preventDefault(); 
+    e.preventDefault();
     const userMessage = input.trim();
     const imageFile = file;
     const tempPreviewUrl = preview;
-    if (!userMessage && !imageFile) return; 
+
+    if (!userMessage && !imageFile) return;
+
     setInput("");
     setFile(null);
-    setPreview(null); 
+    setPreview(null);
     let imageContext = null;
 
+    // 1. 이미지가 있다면 먼저 분석 요청
     if (imageFile) {
-      // ... (이미지 처리 로직 동일) ...
-      setIsLoadingImage(true); 
+      setIsLoadingImage(true);
       const formData = new FormData();
       formData.append("file", imageFile);
+
       try {
-        // ⭐️ (수정) IP 주소 제거 -> 상대 경로 (Vite 프록시가 처리)
+        // ⭐️ 상대 경로 사용 (Vite 프록시)
         const res = await fetch("/api/predict", {
           method: "POST",
           body: formData,
         });
-        // ... (이하 이미지 처리 동일) ...
+
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        
         const data = await res.json();
+        
         setMessages((prev) => [
           ...prev,
           {
             role: "assistant",
             type: "imageAnalysis",
             previewUrl: tempPreviewUrl,
-            resultData: data 
+            resultData: data
           }
         ]);
+
         if (!data.error) {
-          imageContext = data.main_class; 
+          imageContext = data.main_class;
         }
       } catch (error) {
-        // ... (오류 처리 동일) ...
         console.error("Fetch Error (Image Analysis):", error);
         setMessages((prev) => [
           ...prev,
@@ -169,54 +184,117 @@ function Chat() {
           }
         ]);
       }
-      setIsLoadingImage(false); 
+      setIsLoadingImage(false);
     }
 
+    // 2. 텍스트 메시지가 있다면 채팅 요청
     if (userMessage) {
       await handleChatSubmitWithText(userMessage, imageContext);
     }
   };
 
-  // ... (handleExamplePrompt, canSubmit, handleNewChat, handleCopy, getButtonText 동일) ...
   const handleExamplePrompt = (promptText) => {
     setInput(promptText);
     handleChatSubmitWithText(promptText);
   };
-  const canSubmit = !isLoadingChat && !isLoadingImage && (!!input.trim() || !!file);
+
   const handleNewChat = () => {
-    setMessages(defaultMessage);
-    localStorage.removeItem("chat_history");
+    if (window.confirm("대화 내용을 초기화하시겠습니까?")) {
+        setMessages(defaultMessage);
+        localStorage.removeItem("chat_history");
+    }
   };
+
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text).then(() => {
-      alert("답변이 복사되었습니다.");
+      alert("내용이 복사되었습니다.");
     }).catch(err => {
       console.error("복사 실패:", err);
     });
   };
+
   const getButtonText = () => {
     if (isLoadingImage) return "분석 중...";
     if (isLoadingChat) return "답변 중...";
     return "전송";
   };
 
-  // ... (return JSX 부분은 동일, 수정 없음) ...
+  const canSubmit = !isLoadingChat && !isLoadingImage && (!!input.trim() || !!file);
+
   return (
     <div className="chat-container">
-      {/* ... (헤더) ... */}
-      <div className="chat-header">...</div>
-      {/* ... (메시지 리스트) ... */}
-      <div className="message-list" ref={messageListRef}>...</div>
-      {/* ... (입력 폼) ... */}
+      <div className="chat-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <FaRecycle size={24} color="#2ecc71" />
+            <h2>재활용 챗봇</h2>
+        </div>
+        <button onClick={handleNewChat} className="new-chat-btn" title="새 대화 시작">
+            <FiPlusSquare size={20} />
+        </button>
+      </div>
+
+      <div className="message-list" ref={messageListRef}>
+        {messages.map((msg, idx) => (
+          <div key={idx} className={`message-row ${msg.role}`}>
+            {msg.role === "assistant" && (
+                <div className="avatar assistant-avatar">AI</div>
+            )}
+            
+            <div className={`message-bubble ${msg.role}-bubble`}>
+                {/* 이미지 분석 결과 표시 */}
+                {msg.type === "imageAnalysis" && (
+                    <div className="analysis-result">
+                        {msg.previewUrl && (
+                            <img src={msg.previewUrl} alt="Upload Preview" className="uploaded-image" />
+                        )}
+                        {msg.resultData?.error ? (
+                            <div className="error-msg">⚠️ {msg.resultData.error}</div>
+                        ) : (
+                           msg.resultData && (
+                            <div className="detection-info">
+                                <p><strong>감지된 물체:</strong> {msg.resultData.main_class}</p>
+                                <p><strong>확률:</strong> {msg.resultData.confidence}%</p>
+                                {msg.resultData.recycling_info && (
+                                    <div className="recycling-tip">
+                                        Tip: {msg.resultData.recycling_info}
+                                    </div>
+                                )}
+                            </div>
+                           )
+                        )}
+                    </div>
+                )}
+
+                {/* 텍스트 메시지 표시 (마크다운) */}
+                {msg.content && (
+                    <div className="markdown-content">
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                )}
+                
+                {/* 복사 버튼 (Assistant 메시지에만) */}
+                {msg.role === "assistant" && msg.content && (
+                    <button className="copy-btn" onClick={() => handleCopy(msg.content)}>
+                        <FiCopy />
+                    </button>
+                )}
+            </div>
+          </div>
+        ))}
+        {isLoadingChat && <div className="message-row assistant"><div className="loading-dots">...</div></div>}
+      </div>
+
       <form className="chat-input-form" onSubmit={handleSubmitFromForm}>
-        {/* ... (미리보기) ... */}
         {preview && (
-          <div className="staged-image-preview">...</div>
+          <div className="staged-image-preview">
+            <img src={preview} alt="Preview" />
+            <button type="button" onClick={() => { setFile(null); setPreview(null); }}>×</button>
+          </div>
         )}
-        {/* ... (입력 행) ... */}
+        
         <div className="input-row">
           <label htmlFor="image-upload" className="image-upload-button">
-            <FiPaperclip />
+            <FiPaperclip size={20} />
           </label>
           <input
             id="image-upload"

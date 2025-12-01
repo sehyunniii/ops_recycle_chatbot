@@ -20,6 +20,8 @@ langchain-text-splitters
 
 
 unstructured
-unstructured-markdown
+# unstructured-markdown
 
 python-dotenv
+
+ultralytics

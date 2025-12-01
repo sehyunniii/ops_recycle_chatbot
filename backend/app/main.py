@@ -2,6 +2,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from .api.endpoints import chat
+from .api.endpoints import yolo_api
 from .services.classification_service import ModelWrapper
 from .services.rag_service import RAGService
 import os
@@ -48,6 +49,7 @@ app.add_middleware(
 
 # API 라우터 포함
 app.include_router(chat.router, prefix="/api", tags=["API"])
+app.include_router(yolo_api.router, prefix="/api", tags=["YOLO"])
 
 @app.get("/")
 def read_root():

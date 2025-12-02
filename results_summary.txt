@@ -1,0 +1,10 @@
+=== YOLO Training Summary ===
+time: Tue Dec  2 16:46:58 2025
+
+{
+  "metrics/precision(B)": 0.7652038791738087,
+  "metrics/recall(B)": 0.6798525165148416,
+  "metrics/mAP50(B)": 0.759881455631016,
+  "metrics/mAP50-95(B)": 0.526889722207984,
+  "fitness": 0.526889722207984
+}

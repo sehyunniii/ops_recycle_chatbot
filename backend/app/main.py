@@ -13,8 +13,9 @@ app = FastAPI()
 @app.on_event("startup")
 def startup_event():
     # 1. 분류 모델 로드
-    model_path = os.path.join(os.path.dirname(__file__), "models", "weights", "best_model.pth")
+    model_path = os.path.join(os.path.dirname(__file__), "models", "weights", "best.pt")
     device = "cuda" if torch.cuda.is_available() else "cpu"
+
     try:
         app.state.classifier = ModelWrapper(model_path=model_path, device=device)
         print("✅ Classification Model loaded.")

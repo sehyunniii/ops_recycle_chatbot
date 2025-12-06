@@ -217,7 +217,6 @@ function App() {
           <h2>분리배출 4대 원칙</h2>
           <p className="sidebar-intro">
             채팅창에 이미지를 올리거나 질문을 입력해
-            <br />
             정확한 배출 방법을 확인하세요.
           </p>
 

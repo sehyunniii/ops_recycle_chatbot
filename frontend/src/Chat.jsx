@@ -292,7 +292,11 @@ function Chat({
       {/* ... (기존 JSX 코드 유지) ... */}
       <div className="chat-header">
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <FaRecycle size={24} color="#2ecc71" />
+          <img
+          src="/chatbot_logo.png"
+          alt="EcoBot 로고"
+          style={{ width: 28, height: 28 }}
+           />
           <h2>EcoBot</h2>
         </div>
       </div>

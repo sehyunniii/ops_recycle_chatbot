@@ -240,6 +240,8 @@ function App() {
       <div className="chat-main">
         {activeConversation && (
           <Chat
+            key={activeConversation.id} 
+
             storageKey={activeConversation.storageKey}
             onNewChat={handleNewChat}
             onUpdateTitle={(newTitle) =>
